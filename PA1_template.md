@@ -10,8 +10,26 @@ output:
 
 Reading the data from Cloned Repository from GitHub(*RepData_PeerAssessment1*). Before Loadin and preprocessing the data, needed packages will be loaded `library(dplyr)`.
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
 ```
 
 1. Load the data (i.e. read.csv())
@@ -22,7 +40,8 @@ library(dplyr)
 
   *Storing the read dataset to activity data frame*
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 setwd("C:/Users/r.pratap.singh/Desktop/JohnHopkins/RepData_PeerAssessment1")
 
 dwfile <- "activity.zip"
@@ -41,7 +60,8 @@ activity <- read.csv("activity.csv")
    - Grouping on **date** column with summarizing the sum on **Steps** Column.
    - Result stored in the `activity_tt_steps` data frame.
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_tt_steps <- activity %>%
   filter(!is.na(steps)) %>%
   select(-interval) %>%
@@ -54,7 +74,8 @@ activity_tt_steps <- activity %>%
    - Use the ggplot to generate the histogram on **activity_tt_steps** data frame
    - breaks the sequence by 5000.
    
-```{r echo=TRUE, warning=FALSE}
+
+```r
 library(ggplot2)
 
 ggplot(activity_tt_steps, aes(x=steps)) +
@@ -62,15 +83,28 @@ ggplot(activity_tt_steps, aes(x=steps)) +
   xlab("Total Number of Steps Taken/day")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 3. Calculate and report the mean and median of the total number of steps taken per day
 
    - Mean of the total number of steps taken per day using **activity_tt_steps** data frame
    - Median of the total number of steps taken per day **activity_tt_steps** data frame
 
-```{r echo=TRUE, warning=FALSE}
-round(mean(activity_tt_steps$steps))
 
+```r
+round(mean(activity_tt_steps$steps))
+```
+
+```
+## [1] 10766
+```
+
+```r
 median(activity_tt_steps$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
@@ -83,7 +117,8 @@ median(activity_tt_steps$steps)
    - Result stored in the `activity_five` data frame.
    - Use the base plot to generate the Plot on **activity_five** data frame
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_five <- activity %>%
   filter(!is.na(steps)) %>%
   select(-date) %>%
@@ -96,11 +131,18 @@ plot( steps ~ interval, data = activity_five, xlab = "5 min Interval",
      col="blue", lwd=2, lty= 1, type="l")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
    `which.max(activity_five$steps)` *extracts the position and refrencing it on activity_five dataframe obtains the Maximum number of steps*
    
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_five[which.max(activity_five$steps),]$interval
+```
+
+```
+## [1] 835
 ```
 
 ## Imputing missing values
@@ -110,8 +152,13 @@ Note that there are a number of days/intervals where there are missing values (c
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
    **Below code will report the total number of rows with NA values.**
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 sum(is.na(activity))
+```
+
+```
+## [1] 2304
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -128,7 +175,8 @@ sum(is.na(activity))
    - `activity_non_missing` dataframe created to store all non-missing values.
    - Column names of `activity_non_missing` dataframe is used to rename the columns of `activity_filled` dataframe.
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_missing <- activity %>%
   filter(is.na(steps))
 
@@ -157,7 +205,8 @@ colnames(activity_filled) <- colnames(activity_non_missing)
    
    Sort the dataframe on date column and interval column in ascending Order.
    
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_replaced_missing <- rbind(activity_non_missing , activity_filled)
 activity_replaced_missing <- arrange(activity_replaced_missing, date, interval)
 ```
@@ -166,7 +215,8 @@ activity_replaced_missing <- arrange(activity_replaced_missing, date, interval)
 
    - Creation of Histogram for the total number of steps taken each day.
    
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_tt_replaced_missing <- activity_replaced_missing %>%
   select(-interval) %>%
   group_by(date) %>%
@@ -179,18 +229,30 @@ ggplot(activity_tt_replaced_missing, aes(x=steps)) +
   xlab("Total Number of Steps Taken/day")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
    - mean of the total number of steps taken per day.
    
-```{r echo=TRUE, warning=FALSE}
+
+```r
 # mean of the total number of steps taken per day
 round(mean(activity_tt_replaced_missing$steps))
 ```
 
+```
+## [1] 10766
+```
+
    - Median of the total number of steps taken per day.
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 # Median of the total number of steps taken per day
 median(activity_tt_replaced_missing$steps)
+```
+
+```
+## [1] 10762
 ```
 
 ### **Mean doesn't get changed and we observe 3 unit change in Median that might be caused because of Rounding of imputed values. **
@@ -204,7 +266,8 @@ median(activity_tt_replaced_missing$steps)
   - Obtain the Weekdays using R `weekdays()` Function. 
   - Added new Column `Day_Ind` to store the Value *Weekday or Weekend*.
   - Store the result in `activity_weekday_data` dataframe.
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_weekday_data <- activity_replaced_missing %>%
   mutate(Day = as.factor(weekdays(as.Date(date)))) %>%
   mutate(Day_Ind = as.factor(ifelse(Day == "Saturday" | Day == "Sunday","Weekend","Weekday"))) %>%
@@ -217,7 +280,8 @@ activity_weekday_data <- activity_replaced_missing %>%
   - Generate the comparision Plot using `ggplot` for **Weekday & Weekend**.
   - `facet_grid(Day_Ind ~.)` is used to generate the plot on rows.
 
-```{r echo=TRUE, warning=FALSE}
+
+```r
 activity_weekday_data_avg <- activity_weekday_data %>%
   group_by(interval, Day_Ind) %>%
   summarise_all(funs(mean))
@@ -229,4 +293,6 @@ ggplot(activity_weekday_data_avg, aes(x=interval, y = steps)) +
   ylab("Number of Steps") + 
   ggtitle("Time series of 5 min plot by weekday and weekend")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
